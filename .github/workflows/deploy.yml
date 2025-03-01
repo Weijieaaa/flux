@@ -1,4 +1,4 @@
-name: Build and Deploy  
+name: Node.js CI  
 
 on:  
   push:  
@@ -6,30 +6,28 @@ on:
       - main  
 
 jobs:  
-  build-and-deploy:  
+  build:  
     runs-on: ubuntu-latest  
 
     steps:  
-      # 检出代码（使用 actions/checkout@v3）  
-      - name: Checkout  
+      # 检出代码  
+      - name: Checkout code  
         uses: actions/checkout@v3  
 
-      # 使用 setup-node 来安装 Node.js 和 npm 对应的版本  
-      - name: Set up Node.js with npm  
-        uses: actions/setup-node@v3  
-        with:  
-          node-version: '22' 
-      
-      # 更新到特定版本的 npm（例如 v22）  
-      - name: Install npm@22  
-        run: npm install -g npm@22  
+      # 安装 pnpm  
+      - name: Install pnpm  
+        run: npm install -g pnpm  
 
-      # 使用 jenkey2011/vuepress-deploy 来构建和部署  
-      - name: Build and Deploy with vuepress-deploy  
-        uses: jenkey2011/vuepress-deploy@master  
-        env:  
-          ACCESS_TOKEN: ${{ secrets.ACCESS_TOKEN }}  
-          TARGET_REPO: weijieaaa/flux  
-          TARGET_BRANCH: master  
-          BUILD_SCRIPT: npm install -g pnpm && pnpm install && pnpm run docs:build   
-          BUILD_DIR: .vuepress/dist
+      # 安装依赖并构建项目  
+      - name: Install dependencies and build  
+        run: |  
+          pnpm install  
+          pnpm run docs:build
+
+      # 部署到 GitHub Pages  
+      - name: Deploy to GitHub Pages  
+        uses: peaceiris/actions-gh-pages@v3  
+        with:  
+          deploy_key: ${{ secrets.ACCESS_TOKEN }}  
+          publish_branch: master  
+          publish_dir: ./.vuepress/dist
