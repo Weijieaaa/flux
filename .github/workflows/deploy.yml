@@ -7,8 +7,11 @@ jobs:
     - name: Checkout
       uses: actions/checkout@master
 
+    - name: Install pnpm
+      run: npm install -g pnpm
+
     - name: vuepress-deploy
-      uses: peaceiris/actions-gh-pages@v3
+      uses: jenkey2011/vuepress-deploy@master
       env:
         ACCESS_TOKEN: ${{ secrets.ACCESS_TOKEN }}
         TARGET_REPO: weijiaaa/flux
