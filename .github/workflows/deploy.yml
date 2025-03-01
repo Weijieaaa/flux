@@ -14,12 +14,22 @@ jobs:
       - name: Checkout  
         uses: actions/checkout@v3  
 
+      # 使用 setup-node 来安装 Node.js 和 npm 对应的版本  
+      - name: Set up Node.js with npm  
+        uses: actions/setup-node@v3  
+        with:  
+          node-version: '22' 
+      
+      # 更新到特定版本的 npm（例如 v22）  
+      - name: Install npm@22  
+        run: npm install -g npm@22  
+
       # 使用 jenkey2011/vuepress-deploy 来构建和部署  
       - name: Build and Deploy with vuepress-deploy  
         uses: jenkey2011/vuepress-deploy@master  
         env:  
           ACCESS_TOKEN: ${{ secrets.ACCESS_TOKEN }}  
-          TARGET_REPO: weijieaaa/flux
-          TARGET_BRANCH: master
-          BUILD_SCRIPT: npm install -g pnpm && pnpm install && pnpm run docs:build 
-          BUILD_DIR: .vuepress/dist 
+          TARGET_REPO: weijieaaa/flux  
+          TARGET_BRANCH: master  
+          BUILD_SCRIPT: npm install -g pnpm && pnpm install && pnpm run docs:build   
+          BUILD_DIR: .vuepress/dist
