@@ -1,33 +1,41 @@
-name: Node.js CI  
+name: GitHub Pages
 
-on:  
-  push:  
-    branches:  
-      - main  
+on:
+  push:
+    branches:
+      - main
+  pull_request:
 
-jobs:  
-  build:  
-    runs-on: ubuntu-latest  
+jobs:
+  deploy:
+    runs-on: ubuntu-22.04
+    permissions:
+      contents: write
+    concurrency:
+      group: ${{ github.workflow }}-${{ github.ref }}
+    steps:
+      - uses: actions/checkout@v4
 
-    steps:  
-      # 检出代码  
-      - name: Checkout code  
-        uses: actions/checkout@v3  
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
 
-      # 安装 pnpm  
-      - name: Install pnpm  
-        run: npm install -g pnpm  
+      - name: Cache dependencies
+        uses: actions/cache@v4
+        with:
+          path: ~/.npm
+          key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-node-
+      
+      - run: npm install -g pnpm
+      - run: pnpm install
+      - run: pnpm run docs:build
 
-      # 安装依赖并构建项目  
-      - name: Install dependencies and build  
-        run: |  
-          pnpm install  
-          pnpm run docs:build
-
-      # 部署到 GitHub Pages  
-      - name: Deploy to GitHub Pages  
-        uses: peaceiris/actions-gh-pages@v3  
-        with:  
-          deploy_key: ${{ secrets.ACCESS_TOKEN }}  
-          publish_branch: master  
-          publish_dir: ./.vuepress/dist
+      - name: Deploy
+        uses: peaceiris/actions-gh-pages@v4
+        if: github.ref == 'refs/heads/main'
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./public
