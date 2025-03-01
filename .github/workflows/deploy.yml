@@ -22,7 +22,7 @@ jobs:
       - name: Install dependencies and build  
         run: |  
           pnpm install  
-          pnpm run build --if-present  
+          pnpm run docs:build
 
       # 部署到 GitHub Pages  
       - name: Deploy to GitHub Pages  
