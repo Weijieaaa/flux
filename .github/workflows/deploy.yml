@@ -31,7 +31,8 @@ jobs:
       
       - run: npm install -g pnpm
       - run: pnpm install
-      - run: pnpm docs:clean-dev
+      - run: npm ci
+      - run: pnpm run build
 
       - name: Deploy
         uses: peaceiris/actions-gh-pages@v4
