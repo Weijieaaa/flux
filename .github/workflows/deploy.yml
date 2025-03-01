@@ -1,4 +1,4 @@
-name: Node.js CI  
+name: Build and Deploy  
 
 on:  
   push:  
@@ -6,28 +6,20 @@ on:
       - main  
 
 jobs:  
-  build:  
+  build-and-deploy:  
     runs-on: ubuntu-latest  
 
     steps:  
-      # 检出代码  
-      - name: Checkout code  
+      # 检出代码（使用 actions/checkout@v3）  
+      - name: Checkout  
         uses: actions/checkout@v3  
 
-      # 安装 pnpm  
-      - name: Install pnpm  
-        run: npm install -g pnpm  
-
-      # 安装依赖并构建项目  
-      - name: Install dependencies and build  
-        run: |  
-          pnpm install  
-          pnpm run docs:build
-
-      # 部署到 GitHub Pages  
-      - name: Deploy to GitHub Pages  
-        uses: jenkey2011/vuepress-deploy@master 
-        with:  
-          deploy_key: ${{ secrets.ACCESS_TOKEN }}  
-          publish_branch: master  
-          publish_dir: ./.vuepress/dist
+      # 使用 jenkey2011/vuepress-deploy 来构建和部署  
+      - name: Build and Deploy with vuepress-deploy  
+        uses: jenkey2011/vuepress-deploy@master  
+        env:  
+          ACCESS_TOKEN: ${{ secrets.ACCESS_TOKEN }}  
+          TARGET_REPO: weijieaaa/flux
+          TARGET_BRANCH: master
+          BUILD_SCRIPT: pnpm install && pnpm run docs:build 
+          BUILD_DIR: .vuepress/dist 
